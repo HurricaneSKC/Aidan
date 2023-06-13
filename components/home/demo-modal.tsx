@@ -7,7 +7,13 @@ import {
   useMemo,
 } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
+interface SearchResult {
+  name: string;
+  description: string;
+  url: string;
+}
 
 const DemoModal = ({
   showDemoModal,
@@ -20,7 +26,7 @@ const DemoModal = ({
   setShowDemoModal: Dispatch<SetStateAction<boolean>>;
   searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
-  searchResults: string[];
+  searchResults: SearchResult[];
 }) => {
   const handleResultClick = (result: string) => {
     setSearchQuery(result);
@@ -30,12 +36,12 @@ const DemoModal = ({
   return (
     <Modal showModal={showDemoModal} setShowModal={setShowDemoModal}>
       <div className="w-full bg-white overflow-hidden md:max-w-md md:rounded-2xl md:border md:border-gray-100 md:shadow-xl p-4">
-      <h3 className="font-display text-2xl font-bold">Results</h3>
+        <h3 className="font-display text-2xl font-bold">Results</h3>
         {searchResults.map((result, i) => (
-          <div key={i} onClick={() => handleResultClick(result)}>
-            <a href="#">
-            {result}  
-            </a>
+          <div key={i} onClick={() => handleResultClick(result.name)}>
+            <Link href={result.url}>
+              {result.name}
+            </Link>
           </div>
         ))}
       </div>
@@ -48,7 +54,16 @@ export function useDemoModal(searchQuery: string, setSearchQuery: Dispatch<SetSt
 
   const DemoModalCallback = useCallback(() => {
     // Simulating fetching data based on the search query
-    const searchResults = ["Urinary Tract Form", "Result 2", "Result 3"]; 
+    const searchResults: SearchResult[] = [{
+      "name": "Urinary Tract Infection",
+      "description": "A urinary tract infection (UTI) is an infection in any part of your urinary system — your kidneys, ureters, bladder and urethra. Most infections involve the lower urinary tract — the bladder and the urethra.",
+      "url": "/uti-form",
+    },
+    {
+      "name": "Hypertension",
+      "description": "Hypertension (HTN or HT), also known as high blood pressure (HBP), is a long-term medical condition in which the blood pressure in the arteries is persistently elevated. High blood pressure typically does not cause symptoms.",
+      "url": "/hypertension-form",
+    }];
 
     return (
       <DemoModal

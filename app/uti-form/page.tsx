@@ -92,12 +92,12 @@ export default function UTIPage() {
       "options": ["Incontinence when I cough/sneeze/exercise", "Incontinence as soon as I feel the urge to pass water", "Urinary accidents and get caught short or need to run to the toilet"]
     },
     {
-      "question": "Abdominal Pain (Diagram)",
+      "question": "Abdominal Pain (Diagram) - Please indicate where you have pain",
       "type": "checkbox",
       "options": ["Right Upper Quadrant", "Right Lower Quadrant", "Left Upper Quadrant", "Left Lower Quadrant", "Epigastric", "Belly Button", "Loin Pain", "Low back Pain", "Suprapubic pain", "Loin to Groin"]
     },
     {
-      "question": "Abdominal Pain (Description)",
+      "question": "Abdominal Pain (Description) - Please indicate the type of pain you have",
       "type": "checkbox",
       "options": ["Crampy", "Spasms", "Constant", "Related to eating", "Comes and goes", "Heartburn/Indigestion", "Pulsatile", "Radiating into back"]
     },
@@ -107,17 +107,17 @@ export default function UTIPage() {
       "options": ["Crampy", "Spasms", "Constant", "Sharp", "Electric Shock", "Burning", "Hot", "Tingling", "Numb", "Ache", "Glass", "Acidic"]
     },
     {
-      "question": "Back Pain (Diagram)",
+      "question": "Back Pain (Diagram) - Please indicate where you have pain",
       "type": "checkbox",
       "options": ["Left Shoulder Blade", "Right Shoulder Blade", "Inbetween Shoulder Blades", "Left between hips and ribs", "Right between hips and ribs", "Middle Spine", "Left Pelvic Bone", "Right Pelvic bone", "Spine meets pelvis", "Left Buttock", "Right Buttock"]
     },
     {
-      "question": "Back Pain (Description)",
+      "question": "Back Pain (Description) - Please indicate the type of pain you have",
       "type": "checkbox",
       "options": ["Crampy", "Spasms", "Constant", "Sharp", "Electric Shock", "Burning", "Hot", "Tingling", "Numb", "Ache", "Glass", "Acidic"]
     },
     {
-      "question": "Bloating Frequency",
+      "question": "Bloating Frequency (check all that apply)",
       "type": "radio",
       "options": ["I get bloated 1-5 times a month", "I get bloated 6-10 times a month", "I get bloated 11-15 times a month", "I get bloated more than half the days of the month"]
     },
@@ -127,7 +127,7 @@ export default function UTIPage() {
       "options": ["Vaginal Prolapse", "History of Prostate problems", "Family history of Prostate Problems", "Constipation", "Weight Loss"]
     },
     {
-      "question": "Please add any other information not provided which you feel we need to Know",
+      "question": "Please add any other information not provided which you feel we need to Know (e.g. previous investigations, treatments, etc.)",
       "type": "textarea"
     }
   ]

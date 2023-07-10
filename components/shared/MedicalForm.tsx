@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
+import generateDiagnosis from '@/app/api/generate-diagnosis';
 
 interface FormField {
   question: string;
@@ -217,7 +218,26 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
 
   const [patientSummary, setPatientSummary] = useState('');
   const [doctorSummary, setDoctorSummary] = useState('');
+  const [apiResponse, setApiResponse] = useState('');
+
+  const handleApiCall = () => {
+    generateDiagnosis(doctorSummary)
+      .then((response) => {
+        response = HTMLComponent({ htmlString: response });
+        setApiResponse(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      }
+    );
+  };
+  interface HTMLComponentProps {
+    htmlString: string;
+  }
   
+  const HTMLComponent: React.FC<HTMLComponentProps> = ({ htmlString }) => {
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+  };
 
   return (
     <div>
@@ -315,6 +335,18 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
         <div className="mt-6">
           <h2 className="text-xl font-bold">Doctor Summary</h2>
           <p>{doctorSummary}</p>
+          <button 
+            onClick={handleApiCall}
+            className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+              Get Diagnosis & Treatment Plan
+          </button>
+          {apiResponse && (
+            <div className="mt-6">
+              <h3 className="text-xl font-bold">Diagnosis & Treatment Plan</h3>
+              <div>{apiResponse}</div>
+            </div>
+          )}
         </div>
       )}
     </div>

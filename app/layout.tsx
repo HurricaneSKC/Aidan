@@ -7,12 +7,12 @@ import Footer from "@/components/layout/footer";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Aidan",
+  title: "Aida",
   description:
     "your personal assistant for all healthcare needs",
   twitter: {
     card: "summary_large_image",
-    title: "Aidan",
+    title: "Aida",
     description:
       "your personal assistant for all healthcare needs",
     creator: "@sanjaykchopra",

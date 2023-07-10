@@ -2,7 +2,7 @@
 import { ImageResponse } from "next/server";
 
 export const runtime = "edge";
-export const alt = "Aidan -your personal assistant for all healthcare needs";
+export const alt = "Aida -your personal assistant for all healthcare needs";
 export const contentType = "image/png";
 
 export default async function OG() {

@@ -1,10 +1,10 @@
 <a href="https://aidan-psi.vercel.app/">
-  <h1 align="center">Aidan</h1>
+  <h1 align="center">Aida</h1>
 </a>
 
 ## Introduction
 
-Aidan is a automated GP assistant
+Aida is a automated GP assistant
 
 ### Frameworks
 

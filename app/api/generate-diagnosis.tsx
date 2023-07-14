@@ -24,7 +24,7 @@ async function generateDiagnosis(summaryInput: string) {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer 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`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
         },
       }
     );

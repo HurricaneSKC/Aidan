@@ -7,6 +7,7 @@ interface FormField {
   question: string;
   type: string;
   options?: string[];
+  sentence?: string;
 }
 
 interface MedicalFormProps {
@@ -36,185 +37,50 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
   };
 
   const generatePatientSummary = (values: FormValues) => {
-    return formOrder
-      .map(question => {
-        const value = values[question];
-        if (value && (typeof value === 'string' || value.length > 0)) {
-          return formatFormValue(question, value);
-        }
-        return null;
-      })
-      .filter(value => value !== null)
-      .join('\n');
+    const summaryItems: string[] = [];
+  
+    formOrder.forEach((question) => {
+      const value = values[question];
+      if (value && (typeof value === 'string' || value.length > 0)) {
+        const formattedValue = formatFormValue(question, value);
+        summaryItems.push(`<li>${formattedValue}</li>`);
+      }
+    });
+  
+    if (summaryItems.length === 0) {
+      return "";
+    }
+  
+    return `<ol>${summaryItems.join("")}</ol>`;
   };
 
-  const generateFormSummary = (values: FormValues) => {
+  const generateFormSummary = (values: FormValues, formData: FormField[]) => {
     const summarySentences: string[] = [];
   
-    if (values["What Condition do you think you have?"]) {
-      summarySentences.push(`You think you have ${values["What Condition do you think you have?"]}`);
-    }
+    formData.forEach((field) => {
+      const { question, sentence, type } = field;
+      const value = values[question];
+
+      if (value && sentence) {
+        if (
+          (type === "radio" && value !== undefined && value !== null && value !== "") ||
+          (type === "checkbox" && Array.isArray(value) && value.length > 0)
+        ) {
+          let formattedSentence = sentence.replace("{value}", String(value));
+    
+          if (formattedSentence.includes("{Duration Unit}")) {
+            const durationUnit = values["Duration Unit"];
+            formattedSentence = formattedSentence.replace("{Duration Unit}", durationUnit?.toString() ?? "");
+          }
   
-    if (values["Please list your main symptom"]) {
-      summarySentences.push(`Your main symptom is ${values["Please list your main symptom"]}`);
-    }
-  
-    if (values["INCONTINENCE DURATION - When did the condition start?"]) {
-      const duration = values["INCONTINENCE DURATION - When did the condition start?"];
-      const durationUnit = values["Duration Unit"];
-      summarySentences.push(`The condition started ${duration} ${durationUnit} ago`);
-    }
-  
-    if (values["How would you describe the change in your incontinence symptoms over time?"]) {
-      const change = values["How would you describe the change in your incontinence symptoms over time?"];
-      summarySentences.push(`The change in your incontinence symptoms is ${change}`);
-    }
-  
-    if (values["When did it start getting worse?"]) {
-      summarySentences.push(`It started getting worse ${values["When did it start getting worse?"]}`);
-    }
-  
-    if (values["Do you have issues with passing urine? (STARTING, STOPPING, DRIBBLING, STREAM)"]) {
-      const issues = values["Do you have issues with passing urine? (STARTING, STOPPING, DRIBBLING, STREAM)"];
-      if (Array.isArray(issues) && issues.length > 0) {
-        summarySentences.push(`You have issues with passing urine: ${issues.join(", ")}`);
-      }
-    }
-  
-    if (values["Do you pass urine at night? (NOCTURIA)"]) {
-      const nocturia = values["Do you pass urine at night? (NOCTURIA)"];
-      if (nocturia === "I wake up to pass urine at night (number of times)") {
-        const numTimes = values["Number of times you wake up to pass urine at night"];
-        if (numTimes) {
-          summarySentences.push(`You wake up ${numTimes} time(s) to pass urine at night`);
+          summarySentences.push(formattedSentence);
         }
-      } else {
-        summarySentences.push("You do not need to pass urine at night");
       }
-    }
-  
-    if (values["URINARY FREQUENCY (check all that apply)"]) {
-      const urinaryFrequency = values["URINARY FREQUENCY (check all that apply)"];
-      if (Array.isArray(urinaryFrequency) && urinaryFrequency.length > 0) {
-        summarySentences.push(`You have urinary frequency: ${urinaryFrequency.join(", ")}`);
-      }
-    }
-  
-    if (values["PROSTATE HISTORY (check all that apply)"]) {
-      const prostateHistory = values["PROSTATE HISTORY (check all that apply)"];
-      if (Array.isArray(prostateHistory) && prostateHistory.length > 0) {
-        summarySentences.push(`You have a history of prostate problems: ${prostateHistory.join(", ")}`);
-      }
-    }
-    
-    if (values["For my prostate/ urinary issues I am currently taking"]) {
-      const currentMedication = values["For my prostate/ urinary issues I am currently taking"];
-      if (currentMedication) {
-        summarySentences.push(`You are currently taking ${currentMedication}`);
-      }
-    }
-    
-    if (values["Previously tried"]) {
-      const previousTreatments = values["Previously tried"];
-      if (previousTreatments) {
-        summarySentences.push(`You have previously tried ${previousTreatments}`);
-      }
-    }
-    
-    if (values["Immediate/First degree relatives were diagnosed with cancer"]) {
-      const relativesCancer = values["Immediate/First degree relatives were diagnosed with cancer"];
-      if (relativesCancer) {
-        summarySentences.push(`Immediate/First degree relatives were diagnosed with cancer: ${relativesCancer}`);
-      }
-    }
-    
-    if (values["Please add any other information not provided which you feel we need to Know"]) {
-      const additionalInfo = values["Please add any other information not provided which you feel we need to Know"];
-      if (additionalInfo) {
-        summarySentences.push(`Additional information: ${additionalInfo}`);
-      }
-    }
-    
-    if (values["Please indicate any of the following symptoms you have experienced related to haematuria/blood in urine (check all that apply):"]) {
-      const haematuriaSymptoms = values["Please indicate any of the following symptoms you have experienced related to haematuria/blood in urine (check all that apply):"];
-      if (Array.isArray(haematuriaSymptoms) && haematuriaSymptoms.length > 0) {
-        summarySentences.push(`You have experienced the following symptoms related to haematuria/blood in urine: ${haematuriaSymptoms.join(", ")}`);
-      }
-    }
-    
-    if (values["Do you have painful urination? (check all symptoms that apply)"]) {
-      const painfulUrinationSymptoms = values["Do you have painful urination? (check all symptoms that apply)"];
-      if (Array.isArray(painfulUrinationSymptoms) && painfulUrinationSymptoms.length > 0) {
-        summarySentences.push(`You have the following symptoms of painful urination: ${painfulUrinationSymptoms.join(", ")}`);
-      }
-    }
-    
-    if (values["Urinary Risk Factors - I have had any of the following (check all that apply):"]) {
-      const urinaryRiskFactors = values["Urinary Risk Factors - I have had any of the following (check all that apply):"];
-      if (Array.isArray(urinaryRiskFactors) && urinaryRiskFactors.length > 0) {
-        summarySentences.push(`You have the following urinary risk factors: ${urinaryRiskFactors.join(", ")}`);
-      }
-    }
-    
-    if (values["Urinary Incontinence/ Urinary Leaking/ Inability to Control Urine"]) {
-      const urinaryIncontinence = values["Urinary Incontinence/ Urinary Leaking/ Inability to Control Urine"];
-      if (Array.isArray(urinaryIncontinence) && urinaryIncontinence.length > 0) {
-        summarySentences.push(`You have urinary incontinence and experience: ${urinaryIncontinence.join(", ")}`);
-      }
-    }
-    
-    if (values["Abdominal Pain (Diagram) - Please indicate where you have pain"]) {
-      const abdominalPainLocation = values["Abdominal Pain (Diagram) - Please indicate where you have pain"];
-      if (Array.isArray(abdominalPainLocation) && abdominalPainLocation.length > 0) {
-        summarySentences.push(`You have abdominal pain in the following location(s): ${abdominalPainLocation.join(", ")}`);
-      }
-    }
-    
-    if (values["Abdominal Pain (Description) - Please indicate the type of pain you have"]) {
-      const abdominalPainDescription = values["Abdominal Pain (Description) - Please indicate the type of pain you have"];
-      if (Array.isArray(abdominalPainDescription) && abdominalPainDescription.length > 0) {
-        summarySentences.push(`You have the following type of abdominal pain: ${abdominalPainDescription.join(", ")}`);
-      }
-    }
-    
-    if (values["Pain Description"]) {
-      const painDescription = values["Pain Description"];
-      if (Array.isArray(painDescription) && painDescription.length > 0) {
-        summarySentences.push(`You experience the following pain description: ${painDescription.join(", ")}`);
-      }
-    }
-    
-    if (values["Back Pain (Diagram) - Please indicate where you have pain"]) {
-      const backPainLocation = values["Back Pain (Diagram) - Please indicate where you have pain"];
-      if (Array.isArray(backPainLocation) && backPainLocation.length > 0) {
-        summarySentences.push(`You have back pain in the following location(s): ${backPainLocation.join(", ")}`);
-      }
-    }
-    
-    if (values["Back Pain (Description) - Please indicate the type of pain you have"]) {
-      const backPainDescription = values["Back Pain (Description) - Please indicate the type of pain you have"];
-      if (Array.isArray(backPainDescription) && backPainDescription.length > 0) {
-        summarySentences.push(`You have the following type of back pain: ${backPainDescription.join(", ")}`);
-      }
-    }
-    
-    if (values["Bloating Frequency (check all that apply)"]) {
-      const bloatingFrequency = values["Bloating Frequency (check all that apply)"];
-      if (Array.isArray(bloatingFrequency) && bloatingFrequency.length > 0) {
-        summarySentences.push(`You experience bloating with the following frequency: ${bloatingFrequency.join(", ")}`);
-      }
-    }
-    
-    if (values["Additional Conditions (check all that apply)"]) {
-      const additionalConditions = values["Additional Conditions (check all that apply)"];
-      if (Array.isArray(additionalConditions) && additionalConditions.length > 0) {
-        summarySentences.push(`You have the following additional conditions: ${additionalConditions.join(", ")}`);
-      }
-    }
-    
+    });
+
     return summarySentences.join(". ");
-  };
-  
+  };  
+
 
   const [patientSummary, setPatientSummary] = useState('');
   const [doctorSummary, setDoctorSummary] = useState('');
@@ -246,7 +112,7 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
         onSubmit={(values, actions) => {
           console.log({ values });
           const patientSummary = generatePatientSummary(values);
-          const doctorSummary = generateFormSummary(values);
+          const doctorSummary = generateFormSummary(values, formData);
           setPatientSummary(patientSummary);
           setDoctorSummary(doctorSummary);
           actions.setSubmitting(false);
@@ -328,7 +194,7 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
       {patientSummary && (
         <div className="mt-6">
           <h2 className="text-xl font-bold">Patient Summary</h2>
-          <p>{patientSummary}</p>
+          <div dangerouslySetInnerHTML={{ __html: patientSummary }} />
         </div>
       )}
       {doctorSummary && (

@@ -27,7 +27,7 @@ export default function UTIPage() {
   }, []);
 
   const handleApiCallContent = () => {
-    getQuestions().then((data) => {
+    getQuestions().then((data:any) => {
       console.log("Data fetched from API:", data);
       setData(data.utiFormCollection.items);
     })

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import generateDiagnosis from '@/app/api/generate-diagnosis';
@@ -20,6 +20,7 @@ type FormValues = {
 };
 
 const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
+  console.log("formData", formData);
   // Initial values of the form fields
   const initialValues: FormValues = formData.reduce((acc, curr) => {
     acc[curr.question] = curr.type === 'checkbox' ? [] : '';

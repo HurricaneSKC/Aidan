@@ -1,6 +1,41 @@
+"use client";
 import MedicalForm from "@/components/shared/MedicalForm"
+import { useState, useEffect } from "react";
+import getQuestions from "../api/contentful";
 
 export default function UTIPage() {
+  const [data, setData] = useState([]);
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const response = await fetch('/api/contentful');
+  //       console.log('Response from API:', response);
+  //       const { data } = await response.json();
+  //       console.log('Data fetched from API:', data);
+  //       setData(data);
+  //     } catch (error) {
+  //       console.error('Error fetching data from API:', error);
+  //     }
+  //   }
+
+  //   fetchData();
+  // }, []);
+
+  useEffect(() => {
+    handleApiCallContent();
+  }, []);
+
+  const handleApiCallContent = () => {
+    getQuestions().then((data) => {
+      console.log("Data fetched from API:", data);
+      setData(data.utiFormCollection.items);
+    })
+    .catch((error) => {
+      console.error("Error fetching data from API:", error);
+    })
+  }
+
   const UTIFormQuestions = [
     {
       "question": "What Condition do you think you have?",
@@ -158,7 +193,7 @@ export default function UTIPage() {
       "sentence": "I would like to add {value}"
     }
   ]
-  
+
 
   return (
     <div className="z-10 relative col-span-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md p-10 mx-5 flex flex-col max-w-screen-xl xl:mx-auto">
@@ -180,7 +215,7 @@ export default function UTIPage() {
         <li>Please edit the summary of your complaint to fit your history of the complaint</li>
         <li>Please tell us if you have the same issue in the past, when it occurred</li>
       </ul>
-      <MedicalForm formData={UTIFormQuestions} />
+      <MedicalForm formData={data} />
     </div>
   )
 }

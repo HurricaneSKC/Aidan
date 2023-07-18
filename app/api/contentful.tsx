@@ -8,7 +8,7 @@ export default async function getQuestions() {
 
     const query = `
       query utiFormCollectionQuery {
-        utiFormCollection {
+        utiFormCollection(order: indexOfQuestion_ASC) {
           items {
             sys {
               id

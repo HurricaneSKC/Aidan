@@ -7,7 +7,7 @@ interface FormField {
   question: string;
   type: string;
   options?: string[];
-  sentence?: string;
+  sentence: string;
   dependsOn?: string;
 }
 

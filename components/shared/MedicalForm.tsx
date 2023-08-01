@@ -7,7 +7,7 @@ interface FormField {
   question: string;
   type: string;
   options?: string[];
-  sentence?: string;
+  sentence: string;
   dependsOn?: string;
 }
 
@@ -21,12 +21,19 @@ type FormValues = {
 };
 
 const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
+  const [hiddenQuestions, setHiddenQuestions] = useState<string[]>([]);
+
+  const isQuestionHidden = (question: string) => {
+    return hiddenQuestions.includes(question);
+  };
+
   console.log("formData", formData);
   // Initial values of the form fields
   const initialValues: FormValues = formData.reduce((acc, curr) => {
     acc[curr.question] = curr.type === 'checkbox' ? [] : '';
     return acc;
   }, {} as FormValues);
+  console.log("initialValues", initialValues);
 
   const formOrder = formData.map(field => field.question);
 
@@ -62,26 +69,27 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
     formData.forEach((field) => {
       const { question, sentence, type } = field;
       const value = values[question];
-
+  
       if (value && sentence) {
         if (
-          (type === "radio" && value !== undefined && value !== null && value !== "") ||
-          (type === "checkbox" && Array.isArray(value) && value.length > 0)
+          (type === 'radio' && value !== undefined && value !== null && value !== '') ||
+          (type === 'checkbox' && Array.isArray(value) && value.length > 0) ||
+          (type === 'text' || type === 'textarea') // Handle text and textarea types directly
         ) {
-          let formattedSentence = sentence.replace("{value}", String(value));
-    
-          if (formattedSentence.includes("{Duration Unit}")) {
-            const durationUnit = values["Duration Unit"];
-            formattedSentence = formattedSentence.replace("{Duration Unit}", durationUnit?.toString() ?? "");
+          let formattedSentence = sentence.replace('{value}', String(value));
+  
+          if (formattedSentence.includes('{Duration Unit}')) {
+            const durationUnit = values['Duration Unit'];
+            formattedSentence = formattedSentence.replace('{Duration Unit}', durationUnit?.toString() ?? '');
           }
   
           summarySentences.push(formattedSentence);
         }
       }
     });
-
-    return summarySentences.join(". ");
-  };  
+  
+    return summarySentences.join('. ');
+  };
 
 
   const [patientSummary, setPatientSummary] = useState('');

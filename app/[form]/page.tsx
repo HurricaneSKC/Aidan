@@ -3,25 +3,41 @@ import MedicalForm from "@/components/shared/MedicalForm"
 import { useState, useEffect } from "react";
 import getQuestions from "../api/contentful";
 
+interface FormField {
+  question: string;
+  type: string;
+  options?: string[];
+  sentence?: string;
+  dependsOn?: string;
+}
+
+interface MedicalFormProps {
+  formData: FormField[];
+}
+
 export default function Page(
   { params } : { params: { form: string } }
 ) {
-  const [formData, setFormData] = useState([]);
+  const [formData, setFormData] = useState<FormField[]>([]);
 
   useEffect(() => {
-    handleApiCallContent();
-  }, []);
-
-  const handleApiCallContent = () => {
-    getQuestions(params.form).then((data:any) => {
+    getQuestions(params.form)
+      .then((data:any) => {
       console.log("Data fetched from API:", data);
-      setFormData(data[params.form + "FormCollection"].items);
-      // setFormData(data.{params.}FormCollection.items);
+      const FormCollection = params.form.replace("-form", "");
+      console.log("FormCollection", FormCollection);
+      setFormData(data[FormCollection + "FormCollection"].items);
     })
+    // .then (() => {
+    //   setFormData(UTIFormQuestionsWithDependsOn)
+    //   }
+    // )
     .catch((error) => {
       console.error("Error fetching data from API:", error);
     })
-  }
+  }, [params.form]);
+
+  console.log("formData", formData);
 
   return (
     
@@ -29,6 +45,7 @@ export default function Page(
     
     )
   }
+
   
   // const UTIFormQuestions = [
   //   {

@@ -8,14 +8,16 @@ export default function FormLayout({
   children: React.ReactNode
   params: {form: string}
 }) {
-  const formName = params.form.charAt(0).toUpperCase() + params.form.slice(1);
+  // convert uti-form to UTI Form
+  const formName = params.form.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+
   return (
     <section>
       {/* Include shared UI here e.g. a header or sidebar */}
       <div className="z-10 relative col-span-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md p-10 mx-5 flex flex-col max-w-screen-xl xl:mx-auto">
         <h1 
           className="text-2xl font-bold text-gray-900 mb-5"
-        >{formName} Form</h1>
+        >{formName}</h1>
         <h4
           className="text-gray-700 mb-5"
         >

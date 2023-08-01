@@ -5,9 +5,11 @@ import {
   SetStateAction,
   useCallback,
   useMemo,
+  useEffect,
 } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import getUrls from "@/app/api/collections";
 
 interface SearchResult {
   name: string;
@@ -32,7 +34,9 @@ const DemoModal = ({
     setSearchQuery(result);
     setShowDemoModal(false);
   };
-
+  
+  console.log('Search results:', searchResults);
+  
   return (
     <Modal showModal={showDemoModal} setShowModal={setShowDemoModal}>
       <div className="w-full bg-white overflow-hidden md:max-w-md md:rounded-2xl md:border md:border-gray-100 md:shadow-xl p-4">
@@ -50,20 +54,23 @@ const DemoModal = ({
 };
 
 export function useDemoModal(searchQuery: string, setSearchQuery: Dispatch<SetStateAction<string>>) {
+  const [collectionNames, setCollectionNames] = useState([]);
   const [showDemoModal, setShowDemoModal] = useState(false);
+  
+    useEffect(() => {
+      getUrls()
+        .then((data:any) => {
+          setCollectionNames(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching data from API:", error);
+        })
+  }, []);
 
   const DemoModalCallback = useCallback(() => {
     // Simulating fetching data based on the search query
-    const searchResults: SearchResult[] = [{
-      "name": "Urinary Tract Infection",
-      "description": "A urinary tract infection (UTI) is an infection in any part of your urinary system — your kidneys, ureters, bladder and urethra. Most infections involve the lower urinary tract — the bladder and the urethra.",
-      "url": "/uti-form",
-    },
-    {
-      "name": "Hypertension",
-      "description": "Hypertension (HTN or HT), also known as high blood pressure (HBP), is a long-term medical condition in which the blood pressure in the arteries is persistently elevated. High blood pressure typically does not cause symptoms.",
-      "url": "/hypertension-form",
-    }];
+    const searchResults: SearchResult[] = collectionNames;
+
 
     return (
       <DemoModal
@@ -74,7 +81,7 @@ export function useDemoModal(searchQuery: string, setSearchQuery: Dispatch<SetSt
         searchResults={searchResults}
       />
     );
-  }, [showDemoModal, setShowDemoModal, searchQuery, setSearchQuery]);
+  }, [collectionNames, showDemoModal, searchQuery, setSearchQuery]);
 
   return useMemo(
     () => ({ setShowDemoModal, DemoModal: DemoModalCallback }),

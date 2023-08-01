@@ -6,10 +6,13 @@ export default async function getQuestions(slug: string) {
   try {
     const endpoint = 'https://graphql.contentful.com/content/v1/spaces/plvcdls54u22/environments/master';
     const accessToken = 'IWFYuFvpHUrQAA7QUXurjwMwu1izhNCxx8rEQcCnCHA';
+    
+    const FormCollection = slug.replace("-form", "");
+    console.log("FormCollection", FormCollection);
 
     const query = `
-      query ${slug}FormCollectionQuery {
-        ${slug}FormCollection(order: indexOfQuestion_ASC) {
+      query ${FormCollection}FormCollectionQuery {
+        ${FormCollection}FormCollection(order: indexOfQuestion_ASC) {
           items {
             sys {
               id

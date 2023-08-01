@@ -8,6 +8,7 @@ interface FormField {
   type: string;
   options?: string[];
   sentence?: string;
+  dependsOn?: string;
 }
 
 interface MedicalFormProps {
@@ -104,6 +105,15 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
   
   const HTMLComponent: React.FC<HTMLComponentProps> = ({ htmlString }) => {
     return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+  };
+
+  const handlePrint = () => {
+    // Trigger print dialog
+    const printContent = `${patientSummary}\n${doctorSummary}`;
+    const printWindow = window.open("", "Print Window");
+    printWindow?.document.write(`<pre>${printContent}</pre>`);
+    printWindow?.document.close();
+    printWindow?.print();
   };
 
   return (
@@ -207,6 +217,9 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
             className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
               Get Diagnosis & Treatment Plan
+          </button>
+          <button className="bg-green-500 text-white px-4 py-2 rounded ml-3" onClick={handlePrint}>
+            Print
           </button>
           {apiResponse && (
             <div className="mt-6">

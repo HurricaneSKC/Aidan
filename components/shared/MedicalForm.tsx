@@ -33,7 +33,7 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
     acc[curr.question] = curr.type === 'checkbox' ? [] : '';
     return acc;
   }, {} as FormValues);
-  
+
   const { handleSubmit, control, setValue, watch, register } = useForm<FormValues>({
     defaultValues: initialValues
   });
@@ -161,9 +161,9 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
                     name={field.question}
                     control={control}
                     defaultValue=""
-                    render={({ field }) => (
+                    render={({ field: innerField }) => (
                       <input
-                        {...field}
+                        {...innerField}
                         type={field.type === 'textarea' ? 'textarea' : 'text'}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       />

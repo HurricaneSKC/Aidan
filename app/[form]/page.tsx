@@ -8,7 +8,10 @@ interface FormField {
   type: string;
   options?: string[];
   sentence: string;
-  dependsOn?: string;
+  dependsOn?: {
+    question: string;
+    answer: string;
+  }
 }
 
 interface MedicalFormProps {
@@ -46,6 +49,11 @@ export default function Page(
     )
   }
 
+  // {
+
+  //   "question": "DO YOU HAVE URINARY FREQUENCY",
+  //   "answer": "I have urinary frequency",
+  // }
   
   // const UTIFormQuestions = [
   //   {
@@ -87,24 +95,33 @@ export default function Page(
   //     "options": ["To wait a longer than normal to start urinating", "Poor Flow/Stream", "Dribbling after passing water", "Known urethral narrowing/strictures"],
   //     "sentence": "I have issues with passing urine {value}"
   //   },
-  //   {
-  //     "question": "Do you pass urine at night? (NOCTURIA)",
-  //     "type": "radio",
-  //     "options": ["I do not need to pass urine at night", "I wake up to pass urine at night (number of times)"],
-  //     "sentence": "I pass urine at night {value}"
-  //   },
-  //   {
-  //     "question": "Number of times you wake up to pass urine at night",
-  //     "type": "radio",
-  //     "options": ["0", "1", "2", "3", "4", "5+"],
-  //     "sentence": "I wake up {value} times to pass urine at night"
-  //   },
-  //   {
-  //     "question": "URINARY FREQUENCY (check all that apply)",
-  //     "type": "checkbox",
-  //     "options": ["Going more frequent", "Feel like I do not Empty fully", "Needing to go back to wee", "Waking up more than usual to pass urine"],
-  //     "sentence": "I have {value}"
-  //   },
+  //   
+    // {
+    //   "question": "Do you pass urine at night? (NOCTURIA)",
+    //   "type": "radio",
+    //   "options": ["I do not need to pass urine at night", "I wake up to pass urine at night (number of times)"],
+    //   "sentence": "I pass urine at night {value}"
+    // },
+    // {
+    //   "question": "Number of times you wake up to pass urine at night",
+    //   "type": "radio",
+    //   "options": ["0", "1", "2", "3", "4", "5+"],
+    //   "sentence": "I wake up {value} times to pass urine at night",
+    //   "dependsOn": {
+    //     "question": "Do you pass urine at night? (NOCTURIA)",
+    //     "answer": "I wake up to pass urine at night (number of times)"
+    //   }
+    // },
+    // {
+    //   "question": "URINARY FREQUENCY (check all that apply)",
+    //   "type": "checkbox",
+    //   "options": ["Going more frequent", "Feel like I do not Empty fully", "Needing to go back to wee", "Waking up more than usual to pass urine"],
+    //   "sentence": "I have {value}",
+    //   "dependsOn": {
+    //     "question": "Do you pass urine at night? (NOCTURIA)",
+    //     "answer": "I wake up to pass urine at night (number of times)"
+    //   }
+    // },
   //   {
   //     "question": "PROSTATE HISTORY (check all that apply)",
   //     "type": "checkbox",

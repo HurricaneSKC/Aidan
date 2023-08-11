@@ -21,6 +21,7 @@ export default async function getQuestions(slug: string) {
             type
             options
             sentence
+            dependsOn
           }
         }
       }

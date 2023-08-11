@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { useForm, Controller } from 'react-hook-form';
 import generateDiagnosis from '@/app/api/generate-diagnosis';
 
 interface FormField {
@@ -8,9 +8,15 @@ interface FormField {
   type: string;
   options?: string[];
   sentence: string;
-  dependsOn?: string;
+  dependsOn?: {
+    question: string;
+    answer: string;
+  }
 }
 
+interface HTMLComponentProps {
+  htmlString: string;
+}
 interface MedicalFormProps {
   formData: FormField[];
 }
@@ -21,19 +27,31 @@ type FormValues = {
 };
 
 const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
-  const [hiddenQuestions, setHiddenQuestions] = useState<string[]>([]);
-
-  const isQuestionHidden = (question: string) => {
-    return hiddenQuestions.includes(question);
-  };
-
-  console.log("formData", formData);
+  
   // Initial values of the form fields
   const initialValues: FormValues = formData.reduce((acc, curr) => {
     acc[curr.question] = curr.type === 'checkbox' ? [] : '';
     return acc;
   }, {} as FormValues);
-  console.log("initialValues", initialValues);
+  
+  const { handleSubmit, control, setValue, watch, register } = useForm<FormValues>({
+    defaultValues: initialValues
+  });
+  const [patientSummary, setPatientSummary] = useState('');
+  const [doctorSummary, setDoctorSummary] = useState('');
+  const [apiResponse, setApiResponse] = useState('');
+
+  const watchAllFields = watch();
+
+  // Function to check if a question should be visible
+  const isQuestionVisible = (field: FormField) => {
+    // If the question does not depend on another question, it's always visible
+    if (!field.dependsOn) return true;
+
+    // Check if the answer to the dependent question matches the required answer
+    const dependsOnAnswer = watchAllFields[field.dependsOn.question];
+    return dependsOnAnswer === field.dependsOn.answer;
+  };
 
   const formOrder = formData.map(field => field.question);
 
@@ -92,9 +110,6 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
   };
 
 
-  const [patientSummary, setPatientSummary] = useState('');
-  const [doctorSummary, setDoctorSummary] = useState('');
-  const [apiResponse, setApiResponse] = useState('');
 
   const handleApiCall = () => {
     generateDiagnosis(doctorSummary)
@@ -107,9 +122,6 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
       }
     );
   };
-  interface HTMLComponentProps {
-    htmlString: string;
-  }
   
   const HTMLComponent: React.FC<HTMLComponentProps> = ({ htmlString }) => {
     return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
@@ -126,90 +138,84 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
 
   return (
     <div>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values, actions) => {
-          console.log({ values });
-          const patientSummary = generatePatientSummary(values);
-          const doctorSummary = generateFormSummary(values, formData);
-          setPatientSummary(patientSummary);
-          setDoctorSummary(doctorSummary);
-          actions.setSubmitting(false);
-        }}
-      >
-        {() => (
-          <Form className="space-y-6">
-            {formData.map((field, index) => {
-              switch(field.type) {
-                case 'text':
-                case 'textarea':
-                  return (
-                    <div key={index}>
-                      <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
-                      <Field
-                        name={field.question}
-                        type='text'
-                        as={field.type === 'textarea' ? 'textarea' : undefined}
+      <form onSubmit={handleSubmit((values) => {
+        // Handle form submission
+        const patientSummary = generatePatientSummary(values);
+        const doctorSummary = generateFormSummary(values, formData);
+        setPatientSummary(patientSummary);
+        setDoctorSummary(doctorSummary);
+        console.log(values);
+        
+      })}>
+        {formData.map((field, index) => {
+          // Check if the question should be visible
+          if (!isQuestionVisible(field)) return null;
+
+          switch (field.type) {
+            case 'text':
+            case 'textarea':
+              return (
+                <div key={index}>
+                  <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
+                  <Controller
+                    name={field.question}
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type={field.type === 'textarea' ? 'textarea' : 'text'}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       />
-                      <ErrorMessage className="text-red-500" name={field.question} component="div" />
-                    </div>
-                  );
-                case 'radio':
-                  return (
-                    <div key={index}>
-                      <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
-                      {field.options?.map((option, i) => (
-                        <label  key={i}
-                                className="mb-2 ml-2"
-                        >
-                          <Field
-                            type="radio"
-                            name={field.question}
-                            value={option}
-                            className="mr-1 mb-1"
-                          />
-                          {option}
-                        </label>
-                      ))}
-                      <ErrorMessage className="text-red-500" name={field.question} component="div" />
-                    </div>
-                  );
-                case 'checkbox':
-                  return (
-                    <div key={index} className="mb-4">
-                      <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
-                      <div className="flex flex-col flex-wrap">
-                        {field.options?.map((option, i) => (
-                          <label  key={i}
-                                  className="flex items-center mb-2"
-                          >
-                            <Field
-                              type="checkbox"
-                              name={field.question}
-                              value={option}
-                              className="mr-2"
-                            />
-                            {option}
-                          </label>
-                        ))}
-                      </div>
-                      <ErrorMessage className="text-red-500" name={field.question} component="div" />
-                    </div>
-                  );
-                default:
-                  return null;
-              }
-            })}
-            <button 
-              type="submit"
-              className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"  
-              >
-              Submit
-            </button>
-          </Form>
-        )}
-      </Formik>
+                    )}
+                  />
+                </div>
+              );
+            case 'radio':
+              return (
+                <div key={index}>
+                  <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
+                  {field.options?.map((option, i) => (
+                    <label key={i} className="mb-2 ml-2">
+                      <input
+                        type="radio"
+                        value={option}
+                        className="mr-1 mb-1"
+                        {...register(field.question)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              );
+            case 'checkbox':
+              return (
+                <div key={index} className="mb-4">
+                  <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
+                  {field.options?.map((option, i) => (
+                    <label key={i} className="flex items-center mb-2">
+                      <input
+                        type="checkbox"
+                        value={option}
+                        className="mr-2"
+                        {...register(field.question)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              );
+            default:
+              return null;
+          }
+        })}
+        <button
+          type="submit"
+          className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Submit
+        </button>
+      </form>
       {patientSummary && (
         <div className="mt-6">
           <h2 className="text-xl font-bold">Patient Summary</h2>

@@ -23,12 +23,18 @@ export default function Page(
 ) {
   const [formData, setFormData] = useState<FormField[]>([]);
 
+  function snakeToCamel(str: string) {
+    // Remove the "form" part and convert to camelCase
+    return str.replace(/[-_](.)/g, (_: any, char: string) => char.toUpperCase()).replace("form", "");
+  }
+
   useEffect(() => {
     getQuestions(params.form)
       .then((data:any) => {
       console.log("Data fetched from API:", data);
-      const FormCollection = params.form.replace("-form", "");
-      console.log("FormCollection", FormCollection);
+      const removeForm = params.form.replace("-form", "");
+      const FormCollection = snakeToCamel(removeForm);
+      console.log("FormCollectionFromPage", FormCollection);
       setFormData(data[FormCollection + "FormCollection"].items);
     })
     // .then (() => {

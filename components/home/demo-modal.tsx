@@ -42,11 +42,14 @@ const DemoModal = ({
       <div className="w-full bg-white overflow-hidden md:max-w-md md:rounded-2xl md:border md:border-gray-100 md:shadow-xl p-4">
         <h3 className="font-display text-2xl font-bold">Results</h3>
         {searchResults.map((result, i) => (
+          result.url === "/uti-form" ?
           <div key={i} onClick={() => handleResultClick(result.name)}>
             <Link href={result.url}>
               {result.name}
             </Link>
           </div>
+          :
+          null
         ))}
       </div>
     </Modal>

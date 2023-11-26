@@ -155,7 +155,7 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
             case 'text':
             case 'textarea':
               return (
-                <div key={index}>
+                <div key={index} className="my-4">
                   <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
                   <Controller
                     name={field.question}
@@ -173,14 +173,14 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
               );
             case 'radio':
               return (
-                <div key={index}>
+                <div key={index} className="my-4">
                   <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
                   {field.options?.map((option, i) => (
-                    <label key={i} className="mb-2 ml-2">
+                    <label key={i} className="mb-2 mr-4">
                       <input
                         type="radio"
                         value={option}
-                        className="mr-1 mb-1"
+                        className="mr-2 mb-1"
                         {...register(field.question)}
                       />
                       {option}
@@ -190,7 +190,7 @@ const MedicalForm: React.FC<MedicalFormProps> = ({formData}) => {
               );
             case 'checkbox':
               return (
-                <div key={index} className="mb-4">
+                <div key={index} className="my-4">
                   <label className="block font-bold text-gray-700 mb-2">{field.question}</label>
                   {field.options?.map((option, i) => (
                     <label key={i} className="flex items-center mb-2">
